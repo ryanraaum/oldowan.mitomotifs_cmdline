@@ -1,0 +1,99 @@
+Command line scripts for the oldowan.mitomotifs package.
+
+oldowan.mitomotifs-cmdline provides the ``seq2sites`` and ``sites2seq`` command
+line scripts to covert human mitochondrial DNA sequences to lists of variant
+sites relative to the revised Cambridge Reference Seqeunce and vice versa.
+Further information on the rCRS and variant site nomenclature for human mtDNA
+sequences is available at the MitoMotifs_ website. 
+
+This package is only the command line extension of the core oldwan.mitomotifs
+module. If you want just the Python libraries and not the command line tools,
+you should go directly to that package.
+
+Installation Instructions
+=========================
+
+This package is pure Python and has only pure Python dependencies
+(oldowan.mitomotifs and oldowan.fasta) outside of the standard library. All of
+these dependencies will be automatically installed if you use the setuptools_
+``easy_install`` tool.  This usually goes something like this::
+
+	$ easy_install oldowan.mitomotifs-cmdline
+
+or on a unix-like system, assuming you are installing to the main Python
+``site-packages`` directory as a non-privileged user, this::
+
+	$ sudo easy_install oldowan.mitomotifs-cmdline
+
+You may also use the standard python distutils setup method. You will have to
+download ind install oldowan.fasta and oldowan.mitomotifs first. Then, download
+the current source archive from the file list towards the bottom of this page,
+unarchive it, and install. On Mac OS X and many other unix-like systems, having
+downloaded the archive and changed to the directory containing this archive in
+your shell, this might go something like::
+
+	$ tar xvzf oldowan.mitomotifs-cmdline*
+	$ cd oldowan.mitomotifs-cmdline*
+	$ python setup.py install
+
+Quick Start
+===========
+
+Convert sequences to sites::
+
+  $ seq2sites sequences.fasta
+
+Convert sequences to sites, saving the output to a file::
+
+  $ seq2sites sequences.fasta > sites.txt
+
+Sequences must be contiguous! Separate runs of sequence, such as HVR1 and HVR2
+without the intervening sequence interval, must be analyzed separately.
+
+There is also a cutoff on the number of ambigous sites (N) allowed in the
+sequence. By default, this is 10 - but this is an option that can be set::
+
+  $ seq2sites --ambig-cutoff=20 sequences.fasta
+
+Convert a list of variable sites to sequence. The input file should be a
+comma-seprated-values list with one entry per line, with name, N, and sites.
+Sites should be separated by whitespace::
+
+  $ cat hvr1_sites.txt
+  Seq1,1,16129A
+  Seq2,1,16129A 16223T
+  Seq3,2,16223T
+  $ sites2seq hvr1_sites.txt
+
+The default range of sequence returned is HVR1, defined as positions 16023 to
+16365 on the rCRS. All predefined ranges are:
+
+- HVR1: 16024-16365
+- HVR2: 73-340
+- HVR1to2: 16024-340
+- coding: 577-15992
+- all: 1-16559
+
+So, to convert a list of HVR2 sites to sequence::
+
+  $ sites2seq --region=hvr2 hvr2_sites.txt
+
+An arbitrary range may be selected. If the stop value is smaller than the
+start, it is assumed that the range runs through the origin::
+
+  $ sites2seq --begin=16024 --end=340 dloop_sites.txt
+
+The rCRS sequence will can be selected with 'rCRS' as the sites value::
+
+  $ cat sites.txt
+  Seq1,1,rCRS
+  Seq2,1,16129A 16223T
+
+Release History ===============
+
+1.0.0 (August 16, 2008)
+    initial release of module.
+
+
+.. _MitoMotifs: http://mitomotifs.raaum.org
+.. _setuptools: http://peak.telecommunity.com/DevCenter/EasyInstall
